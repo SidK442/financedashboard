@@ -1,0 +1,53 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import FinancialForm from '@/components/FinancialForm';
+import { FinancialData } from '@/lib/supabase';
+
+export default function Home() {
+  const router = useRouter();
+
+  const handleSubmit = async (data: Omit<FinancialData, 'id' | 'created_at'>) => {
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze data');
+      }
+
+      const result = await response.json();
+
+      // Redirect to results page with data and insights
+      router.push(
+        `/results?data=${encodeURIComponent(JSON.stringify(data))}&insights=${encodeURIComponent(
+          result.insights
+        )}`
+      );
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to process data. Please try again.');
+    }
+  };
+
+  return (
+    <main className="min-h-screen p-8 bg-gray-50">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Financial Insight Dashboard
+          </h1>
+          <p className="text-lg text-gray-600">
+            Enter your company&apos;s financial data to receive visual insights and AI-powered analysis
+          </p>
+        </div>
+        <FinancialForm onSubmitAction={handleSubmit} />
+      </div>
+    </main>
+  );
+}
