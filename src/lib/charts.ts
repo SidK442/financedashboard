@@ -1,5 +1,5 @@
 import { ChartData, ChartOptions } from 'chart.js';
-import { FinancialData } from './supabase';
+import type { FinancialData } from './supabase';
 
 export function createFinancialChartData(data: Omit<FinancialData, 'id' | 'created_at'>): ChartData<'bar'> {
   return {

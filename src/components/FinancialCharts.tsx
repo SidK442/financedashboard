@@ -14,7 +14,7 @@ import {
   RadialLinearScale,
 } from 'chart.js';
 import { Bar, Pie, Line, Radar, Doughnut } from 'react-chartjs-2';
-import { FinancialData } from '../lib/supabase';
+import type { FinancialData } from '../lib/supabase';
 
 ChartJS.register(
   CategoryScale,

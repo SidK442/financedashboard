@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { FinancialData } from '../lib/supabase';
+import CsvUpload from './CsvUpload';
+import type { FinancialData } from '../lib/supabase';
 
 type FinancialFormProps = {
   onSubmitAction: (data: Omit<FinancialData, 'id' | 'created_at'>) => Promise<void>;
@@ -64,6 +65,27 @@ export default function FinancialForm({ onSubmitAction }: FinancialFormProps) {
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300">
+
+        {/* CSV Import */}
+        <CsvUpload onParsedAction={(obj) => {
+          const map: Record<string, string> = {
+            annual_revenue: 'annual_revenue',
+            gross_profit: 'gross_profit',
+            operating_expenses: 'operating_expenses',
+            net_income: 'net_income',
+            cash_on_hand: 'cash_on_hand',
+            total_assets: 'total_assets',
+            total_liabilities: 'total_liabilities',
+            number_of_employees: 'number_of_employees',
+            annual_recurring_revenue: 'annual_recurring_revenue',
+          };
+          Object.entries(map).forEach(([csvKey, formId]) => {
+            const el = document.getElementById(formId) as HTMLInputElement | null;
+            if (el && typeof obj[csvKey] === 'number' && !Number.isNaN(obj[csvKey])) {
+              el.value = String(obj[csvKey]);
+            }
+          });
+        }} />
 
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">

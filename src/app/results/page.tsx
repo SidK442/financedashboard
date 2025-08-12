@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import FinancialCharts from '@/components/FinancialCharts';
 import ExpandableInsights from '@/components/ExpandableInsights';
 import KPITracker from '@/components/KPITracker';
 import QuarterlyBreakdown from '@/components/QuarterlyBreakdown';
-import { FinancialData } from '@/lib/supabase';
+import type { FinancialData } from '@/lib/supabase';
 import { DetailedInsights } from '@/types/financial';
 
 export default function ResultsPage() {
@@ -15,6 +15,7 @@ export default function ResultsPage() {
   const [chartData, setChartData] = useState<Omit<FinancialData, 'id' | 'created_at'> | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'kpi' | 'quarterly'>('overview');
   const [isLoading, setIsLoading] = useState(true);
+  const pdfRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -127,21 +128,60 @@ export default function ResultsPage() {
               <p className="text-blue-100 text-lg">Comprehensive insights and recommendations for your business</p>
             </div>
             <div className="mt-4 md:mt-0">
-              <button
-                onClick={handleNewAnalysis}
-                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span>New Analysis</span>
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={async () => {
+                    const { jsPDF } = await import('jspdf');
+                    const html2canvas = (await import('html2canvas')).default;
+                    const el = pdfRef.current;
+                    if (!el) return;
+                    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = pageWidth - 40; // 20pt margins
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let y = 20;
+                    // Title
+                    pdf.setFont('helvetica', 'bold');
+                    pdf.setFontSize(16);
+                    pdf.text('Financial Insight - Analysis Report', 20, y);
+                    y += 10;
+                    // Image content, paginate if too tall
+                    let remainingHeight = imgHeight;
+                    let position = 40;
+                    let imgY = position;
+                    while (remainingHeight > 0) {
+                      pdf.addImage(imgData, 'PNG', 20, imgY, imgWidth, Math.min(remainingHeight, pageHeight - position - 20));
+                      remainingHeight -= (pageHeight - position - 20);
+                      if (remainingHeight > 0) {
+                        pdf.addPage();
+                        imgY = 20;
+                      }
+                    }
+                    pdf.save('financial_analysis.pdf');
+                  }}
+                  className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200"
+                >
+                  Export PDF
+                </button>
+                <button
+                  onClick={handleNewAnalysis}
+                  className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span>New Analysis</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div ref={pdfRef} className="container mx-auto px-4 py-8 bg-white">
         {/* Navigation Tabs */}
         <div className="mb-8">
           <div className="flex justify-center">

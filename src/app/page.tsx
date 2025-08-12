@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import FinancialForm from '@/components/FinancialForm';
 import PasswordProtection from '@/components/PasswordProtection';
-import { FinancialData } from '@/lib/supabase';
+import type { FinancialData } from '@/lib/supabase';
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

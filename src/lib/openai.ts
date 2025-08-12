@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { FinancialData } from './supabase';
+import type { FinancialData } from './supabase';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

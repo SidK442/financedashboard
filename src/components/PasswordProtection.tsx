@@ -11,24 +11,30 @@ export default function PasswordProtection({ onAuthenticated }: PasswordProtecti
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Simple password - you can change this
-  const CORRECT_PASSWORD = 'MIT2025';
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setIsError(false);
 
-    // Add a small delay for better UX
-    setTimeout(() => {
-      if (password === CORRECT_PASSWORD) {
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      if (res.ok) {
         onAuthenticated();
       } else {
         setIsError(true);
         setPassword('');
       }
+    } catch (err) {
+      console.error('Auth error', err);
+      setIsError(true);
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   return (
