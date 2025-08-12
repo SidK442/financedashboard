@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${sourceCode.variable} font-sans antialiased bg-gradient-to-br from-slate-50 to-blue-50`}
+        className={`${inter.variable} ${sourceCode.variable} font-sans antialiased bg-gradient-to-br from-indigo-50 via-sky-50 to-purple-50 dark:bg-gray-900`}
       >
         <div className="min-h-screen">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
