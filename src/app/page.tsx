@@ -58,7 +58,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 relative">
+    <main className="min-h-screen relative">
       <div className="container mx-auto py-8 relative z-10">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">

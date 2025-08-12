@@ -118,7 +118,7 @@ export default function ResultsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
         <div className="container mx-auto px-4 py-8">
